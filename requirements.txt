@@ -1,0 +1,6 @@
+pypng
+astropy
+matplotlib
+numpy
+jupyter
+
