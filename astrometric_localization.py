@@ -84,7 +84,8 @@ def solution_to_image_coords(image_stars, solution_stars):
     Output: Transformation Matric and matched stars in the form of (x, y) coords
     '''
     transf, (s_list, t_list) = aa.find_transform(image_stars, solution_stars)
-    return (transf, s_list)
+    dst_calc = aa.matrix_transform(solution_stars, transf.inverse)
+    return (transf, dst_calc)
 
 def apply_starmask(s_list, stacked_image, images):
     '''

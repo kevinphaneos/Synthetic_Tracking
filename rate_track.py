@@ -16,6 +16,7 @@ from os.path import isfile, join
 from natsort import os_sorted
 from astropy.io import fits
 from astropy.wcs import WCS
+import contextlib
 
 class rate_tracked_info:
     def __init__(self, data_path, num_velocities):
@@ -66,8 +67,13 @@ def preprocess_frames(data_path):
     backgroundless_images =  convert_np_to_cp(apply_bkg_to_images(unprocessed_images_numpy, bkg))
     stars = detect_stars(cp.ndarray.get(stack_images(backgroundless_images, cp.asarray([0, 0]))))
     astrometric_solution = match_to_catalogue(stars)
-    s_list = solution_to_image_coords(stars, skycoord_to_pixels(astrometric_solution))[1]
-    return (astrometric_solution, convert_np_to_cp(apply_starmask(s_list, initial_stack, backgroundless_images)))
+    if (astrometric_solution != None and len(stars) >= 15):
+        print(len(stars))
+        print(len(skycoord_to_pixels(astrometric_solution)))
+        with contextlib.suppress(Exception):
+            s_list = solution_to_image_coords(stars, skycoord_to_pixels(astrometric_solution))[1]
+            return (astrometric_solution, convert_np_to_cp(apply_starmask(s_list, initial_stack, backgroundless_images)))
+    return None, backgroundless_images
 
 def stack_images(frames, velocity_vector):
     '''
